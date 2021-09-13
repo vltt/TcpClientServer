@@ -10,7 +10,9 @@
 class Client {
 public:
     Client(boost::asio::io_context& io_service, int n)
-            : socket_(io_service), num_of_packets_(n), packets_buffer_size_(std::min(100, n)) {}
+        : socket_(io_service),
+          num_of_packets_(n),
+          packets_buffer_size_(std::min(100000, n)) {}
 
     void run();
 
@@ -34,10 +36,10 @@ private:
 void Client::send_packet(uint32_t num) {
     boost::system::error_code error;
     boost::asio::write(
-            socket_,
-            boost::asio::buffer(reinterpret_cast<char*>(&packets_[num]),
-                                sizeof(models::TcpPacketRequest)),
-            error);
+        socket_,
+        boost::asio::buffer(reinterpret_cast<char*>(&packets_[num]),
+                            sizeof(models::TcpPacketRequest)),
+        error);
 
     if (error) {
         std::cerr << "send failed: " << error.message() << std::endl;
@@ -55,7 +57,7 @@ models::TcpPacketRequest Client::generate_packet(uint32_t num) {
 
 void Client::run() {
     socket_.connect(boost::asio::ip::tcp::endpoint(
-            boost::asio::ip::address::from_string("127.0.0.1"), 1234));
+        boost::asio::ip::address::from_string("127.0.0.1"), 1234));
 
     uint32_t sent_paket_num;
     for (sent_paket_num = 0; sent_paket_num < packets_buffer_size_;
@@ -70,10 +72,10 @@ void Client::run() {
         // getting response from server
         char response_bytes[sizeof(models::TcpPacketResponse)];
         boost::asio::read(
-                socket_,
-                boost::asio::buffer(response_bytes, sizeof(models::TcpPacketResponse)));
+            socket_, boost::asio::buffer(response_bytes,
+                                         sizeof(models::TcpPacketResponse)));
         auto response =
-                reinterpret_cast<models::TcpPacketResponse*>(response_bytes);
+            reinterpret_cast<models::TcpPacketResponse*>(response_bytes);
 
         if (!response->done) {
             throw std::logic_error("Server always returns done=true");

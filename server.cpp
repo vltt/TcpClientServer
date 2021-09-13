@@ -16,12 +16,13 @@
 
 class Server {
 public:
-    Server(boost::asio::io_context& io_service, std::string dump_folder_path = {})
-            : io_service_(io_service),
-              acceptor_(io_service, boost::asio::ip::tcp::endpoint(
-                      boost::asio::ip::tcp::v4(), 1234)),
-              requests_pool_(kWorkersCount),
-              dump_folder_path_(std::move(dump_folder_path)) {
+    Server(boost::asio::io_context& io_service,
+           std::string dump_folder_path = {})
+        : io_service_(io_service),
+          acceptor_(io_service, boost::asio::ip::tcp::endpoint(
+                                    boost::asio::ip::tcp::v4(), 1234)),
+          requests_pool_(kWorkersCount),
+          dump_folder_path_(std::move(dump_folder_path)) {
         start_accept();
     }
 
@@ -86,7 +87,8 @@ void Server::handle_accept(std::shared_ptr<Connection> connection,
         oFile.open(file_name, std::ios::out | std::ios::app);
 
         open_clients_.insert(
-                {file_name, ClientInfo{.file_stream = std::move(oFile),
+            {file_name,
+             ClientInfo{.file_stream = std::move(oFile),
                         .connection = std::move(connection),
                         .mutex_ptr = std::make_unique<std::mutex>()}});
 
@@ -98,12 +100,13 @@ void Server::handle_accept(std::shared_ptr<Connection> connection,
 void Server::async_read(const std::shared_ptr<Connection>& connection,
                         std::string file_name) {
     boost::asio::async_read(
-            connection->socket(),
-            boost::asio::buffer(connection->get_request_ptr(),
-                                sizeof(models::TcpPacketRequest)),
-            boost::bind(&Server::handle_read, this, boost::asio::placeholders::error,
-                        boost::asio::placeholders::bytes_transferred, connection,
-                        file_name));
+        connection->socket(),
+        boost::asio::buffer(connection->get_request_ptr(),
+                            sizeof(models::TcpPacketRequest)),
+        boost::bind(&Server::handle_read, this,
+                    boost::asio::placeholders::error,
+                    boost::asio::placeholders::bytes_transferred, connection,
+                    file_name));
 }
 
 void Server::handle_read(const boost::system::error_code& err,
@@ -136,11 +139,11 @@ void Server::do_work(const std::shared_ptr<Connection>& connection,
     }
 
     models::TcpPacketResponse response =
-            connection->create_response(request.num, true);
+        connection->create_response(request.num, true);
     char* response_bytes = reinterpret_cast<char*>(&response);
     boost::asio::write(
-            connection->socket(),
-            boost::asio::buffer(response_bytes, sizeof(models::TcpPacketResponse)));
+        connection->socket(),
+        boost::asio::buffer(response_bytes, sizeof(models::TcpPacketResponse)));
 
     if (request.is_last) {
         connection->socket().close();

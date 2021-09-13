@@ -1,0 +1,4 @@
+/Users/violettfaid/CLionProjects/TcpClientServer/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/violettfaid/CLionProjects/TcpClientServer/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/violettfaid/CLionProjects/TcpClientServer/cmake-build-debug/CMakeFiles/TcpClient.dir
+/Users/violettfaid/CLionProjects/TcpClientServer/cmake-build-debug/CMakeFiles/TcpServer.dir
